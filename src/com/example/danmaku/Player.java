@@ -1,9 +1,11 @@
 package com.example.danmaku;
 
+import com.example.opengles20util.core.GLES20Util;
+
 
 /**
  * 自機制御用クラス
- * @author 
+ * @author
  *
  */
 public class Player extends Touch{
@@ -82,7 +84,7 @@ public class Player extends Touch{
 	 */
 	public void Draw(){//true 点有
 		regulation();
-		GLES20Util.DrawGraph(nowPositionX,nowPositionY,sizeX,sizeY,BitmapList.getBitmap(graphId));
+		GLES20Util.DrawGraph(nowPositionX,nowPositionY,sizeX,sizeY,BitmapList.getBitmap(graphId),1f);
 	}
 	@Override
 	public float getPositionX(){
