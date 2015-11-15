@@ -3,7 +3,6 @@ package com.example.danmaku;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.R;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
@@ -14,16 +13,20 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 
+import com.example.danmaku.Screen.MenuScreen;
+import com.example.opengles20util.Util.FileManager;
+import com.example.opengles20util.Util.FpsController;
+import com.example.opengles20util.core.GLES20Util;
+
 public class Main extends Activity implements GLSurfaceView.Renderer {
   // メンバー変数
   private boolean touch = false;
   private ScaleGestureDetector gesDetect = null;
-  private int bulletImage,plane;
   private Bitmap[] fpsImage = new Bitmap[10];
-  private Enemy enemy;
   private Player player;
   private String vertexShader;
   private String fragmentShader;
+  private FpsController fpsControll = new FpsController((short)60);
 
   public boolean onTouchEvent(MotionEvent event){
 	  if(event.getPointerCount()>1){
@@ -34,12 +37,13 @@ public class Main extends Activity implements GLSurfaceView.Renderer {
 	  }
 	  switch(event.getAction()){
 	  case MotionEvent.ACTION_DOWN:
-		  player.setTouchDown(event.getX(),event.getY());
+		  //player.setTouchDown(event.getX(),event.getY());
 		  break;
 	  case MotionEvent.ACTION_MOVE:
-		  player.move(event.getX(),event.getY());
+		  //player.move(event.getX(),event.getY());
 		  break;
 	  case MotionEvent.ACTION_UP:
+		  GameManager.touch(event);
 		  break;
 	  }
 	return true;
@@ -78,11 +82,7 @@ private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOn
      // ScaleGestureDetecotorクラスのインスタンス生成
      gesDetect = new ScaleGestureDetector(this, onScaleGestureListener);
 
-     plane = BitmapList.setBitmap(GLES20Util.loadBitmap(R.drawable.plane));
-     bulletImage = BitmapList.setBitmap(GLES20Util.loadBitmap(R.drawable.bomd2));
-     player = new Player(plane,0.1f,0.1f);
-     enemy = new Enemy(60,180,0.0f,0.0f,1.0f,1.5f,1.0f,0.0f,0,0,plane,0,0,0);
-
+     GameManager.nowScreen = new MenuScreen();
 
      Log.d("onCreate","onCreate finished");
   }
@@ -94,6 +94,11 @@ private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOn
 	fragmentShader = new String(FileManager.readShaderFile(this,"FSHADER.txt"));
 	GLES20Util.initGLES20Util(vertexShader,fragmentShader);
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // 画面をクリアする色を設定する
+
+    Log.d("onSurfaceCreate","ScreenSize width : " + String.valueOf(GLES20Util.getWidth())
+   		 + " | height : " + String.valueOf(GLES20Util.getHight())
+   		 );
+
   }
 
   @Override
@@ -102,11 +107,9 @@ private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOn
     GLES20Util.initDrawErea(width, height,false);
     //テクスチャの再読み込み
     GLES20Util.initTextures();
-    GLES20Util.initFpsBitmap(fpsImage,true);
+    GLES20Util.initFpsBitmap(fpsImage,true,R.drawable.degital2);
 
   }
-  private int totalFrame=0;
-  private FpsController fpsControll = new FpsController((short)60);
 
   @Override
   public void onDrawFrame(GL10 gl) {
@@ -115,28 +118,13 @@ private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOn
   }
   private void process(){
 	fpsControll.updateFps();
-	Barrage.normal((0.65f*(float)Math.sin(totalFrame/10.0f)+0.65f),
-			0.3f*(float)Math.sin(totalFrame/30.0f)+1.3f,
-			0.01f,
-			totalFrame*10,
-			bulletImage);
-	//if(totalFrame >=60){
-		enemy.update();
-	//}
-	BulletList.updateBullet();
-	BulletList.eraseBullet(GLES20Util.getAspect());
-	totalFrame++;
   }
   private void draw(){
 	// 描画領域をクリアする
 	GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-	//自機の表示
-	player.Draw();
-	//敵の表示
-	enemy.Draw();
-    //弾の表示
-    BulletList.Draw();
     //FPSの表示
-    GLES20Util.DrawFPS(1.1f,1.8f,fpsControll.getFps(),fpsImage);
+    GLES20Util.DrawFPS(0,1.8f,fpsControll.getFps(),fpsImage,1f);
+    //
+    GameManager.draw();
   }
 }
