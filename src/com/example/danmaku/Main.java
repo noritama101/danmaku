@@ -27,14 +27,18 @@ public class Main extends Activity implements GLSurfaceView.Renderer {
   private String vertexShader;
   private String fragmentShader;
   private FpsController fpsControll = new FpsController((short)60);
+  private boolean first = true;
+  private Bitmap temp;
+  private float tempX,tempY;
 
-  public boolean onTouchEvent(MotionEvent event){
+public boolean onTouchEvent(MotionEvent event){
 	  if(event.getPointerCount()>1){
 		  //マルチタッチを検出
 		  gesDetect.onTouchEvent(event);
 		  touch = true;
 		  return true;
 	  }
+	  GameManager.touch(event);
 	  switch(event.getAction()){
 	  case MotionEvent.ACTION_DOWN:
 		  //player.setTouchDown(event.getX(),event.getY());
@@ -43,11 +47,10 @@ public class Main extends Activity implements GLSurfaceView.Renderer {
 		  //player.move(event.getX(),event.getY());
 		  break;
 	  case MotionEvent.ACTION_UP:
-		  GameManager.touch(event);
 		  break;
 	  }
-	return true;
-  }
+	  return true;
+}
 
 //スケールジェスチャーイベントを取得
 private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOnScaleGestureListener(){
@@ -82,8 +85,6 @@ private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOn
      // ScaleGestureDetecotorクラスのインスタンス生成
      gesDetect = new ScaleGestureDetector(this, onScaleGestureListener);
 
-     GameManager.nowScreen = new MenuScreen();
-
      Log.d("onCreate","onCreate finished");
   }
 
@@ -93,12 +94,11 @@ private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOn
 	vertexShader = new String(FileManager.readShaderFile(this,"VSHADER.txt"));
 	fragmentShader = new String(FileManager.readShaderFile(this,"FSHADER.txt"));
 	GLES20Util.initGLES20Util(vertexShader,fragmentShader);
-    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // 画面をクリアする色を設定する
+    GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // 画面をクリアする色を設定する
 
     Log.d("onSurfaceCreate","ScreenSize width : " + String.valueOf(GLES20Util.getWidth())
    		 + " | height : " + String.valueOf(GLES20Util.getHight())
    		 );
-
   }
 
   @Override
@@ -113,6 +113,11 @@ private final SimpleOnScaleGestureListener onScaleGestureListener = new SimpleOn
 
   @Override
   public void onDrawFrame(GL10 gl) {
+	  if(first){
+		  GameManager.nowScreen = MenuScreen.getInstance();
+		  first = false;
+		  temp = GLES20Util.createBitmap(0, 255, 0, 255);
+	  }
 	  process();
 	  draw();
   }

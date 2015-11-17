@@ -1,6 +1,7 @@
 package com.example.danmaku;
 
 import com.example.opengles20util.core.GLES20Util;
+import com.example.opengles20util.graphic.blending_mode.GLES20COMPOSITION_ALPHA;
 
 
 /**
@@ -84,7 +85,7 @@ public class Player extends Touch{
 	 */
 	public void Draw(){//true 点有
 		regulation();
-		GLES20Util.DrawGraph(nowPositionX,nowPositionY,sizeX,sizeY,BitmapList.getBitmap(graphId),1f);
+		GLES20Util.DrawGraph(nowPositionX,nowPositionY,sizeX,sizeY,BitmapList.getBitmap(graphId),1f,GLES20COMPOSITION_ALPHA.getInstance());
 	}
 	@Override
 	public float getPositionX(){

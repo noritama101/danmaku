@@ -14,8 +14,9 @@ public class GameManager {
 		if(isTransition){
 			isTransition = transition.Transition();
 		}
-		else
+		else{
 			nowScreen.Draw(0, 0);
+		}
 	}
 	public static void touch(MotionEvent touch){
 		if(!isTransition){

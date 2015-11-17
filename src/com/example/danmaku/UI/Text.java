@@ -3,6 +3,7 @@ package com.example.danmaku.UI;
 import android.graphics.Bitmap;
 
 import com.example.opengles20util.core.GLES20Util;
+import com.example.opengles20util.graphic.blending_mode.GLES20COMPOSITIONMODE;
 
 public class Text {
 	public enum TextAlign{
@@ -41,7 +42,7 @@ public class Text {
 		this.scaleY = scaleY;
 	}
 
-	public void draw(float x,float y,float size,float alpha){
+	public void draw(float x,float y,float alpha,GLES20COMPOSITIONMODE mode){
 		if(horizontalTextAlign == TextAlign.CENTOR){
 			this.x = bitmap.getWidth()/(scaleX*2000f);
 		}
@@ -60,7 +61,7 @@ public class Text {
 		else{
 			this.y = 0;
 		}
-		GLES20Util.DrawGraph(x-this.x, y-this.y, bitmap.getWidth()/(scaleX*1000f), bitmap.getHeight()/(scaleY*1000f), bitmap,1f);
+		GLES20Util.DrawGraph(x-this.x, y-this.y, bitmap.getWidth()/(scaleX*1000f), bitmap.getHeight()/(scaleY*1000f), bitmap,1f,mode);
 	}
 
 	public Bitmap getBitmap() {
